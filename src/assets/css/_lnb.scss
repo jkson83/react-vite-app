@@ -1,0 +1,17 @@
+.lnb{
+  position: relative;
+  height:100%;
+  .menu{
+    padding:40px 80px 20px 40px;
+    > ul{
+      display: flex;
+      flex-direction: column;
+      > li{
+        font-size: 20px;
+        & + li{
+          padding-top:20px;
+        }
+      }
+    }
+  }
+}
