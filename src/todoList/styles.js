@@ -88,7 +88,16 @@ export const List = {
   border: none;
   color: #ef4444;
   cursor: pointer;`,
+
+  EditInput:styled.input`
+  flex: 1;
+  font-size: 16px;
+  padding: 4px 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  `
 };
+
 
 export const Footer = styled.div`
   margin-top: 16px;

@@ -21,8 +21,27 @@ export default function TodoList() {
   const todos = useRecoilValue(filteredTodoList);
   const rmCount = useRecoilValue(remainingTodoCount);
   const { toggleTodo, addTodo, editTodo, deleteTodo } = useTodoActions();
+  //수정 상태관리
+  const [editingId, setEditingId] = useState(null);
+  const [editingText, setEditingText] = useState("");
 
-  //console.log(rmCount);
+  // 텍스트 클릭시 수정 모드로 전환
+  const startEdit = (todo) => { 
+    setEditingId(todo.id);
+    setEditingText(todo.text);
+  }
+
+
+  const finishEdit = (id) => {
+    if (editingText.trim() !== "") {
+      editTodo(id, editingText);
+    }
+    setEditingId(null);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+  };
 
   return (
   <TodoWrapper>
@@ -48,9 +67,34 @@ export default function TodoList() {
         <List.Row>
           {todos.map((todo) => (
             <List.Item key={todo.id}>
-              <List.Checkbox type="checkbox" checked={ todo.completed} onChange={() => toggleTodo(todo.id)} />
-              <List.Text completed={todo.completed} onClick={()=>editTodo(todo.id, prompt("Edit task:", todo.text))} >{todo.text }</List.Text>
-              <List.DeleteButton onClick={ ()=> deleteTodo(todo.id)}>Delete</List.DeleteButton>
+              <List.Checkbox type="checkbox" checked={todo.completed} onChange={() => toggleTodo(todo.id)} />
+              {/* 프롬프트 화면에서 수정 방식 */}
+              {/* <List.Text completed={todo.completed} onClick={()=>editTodo(todo.id, prompt("Edit task:", todo.text))} >{todo.text }</List.Text> */}
+              {/* 수정 클릭시 인풋 화면 전환 후 수정 방식 */}
+              {editingId === todo.id ? (
+                <List.EditInput
+                  aoutoFocus value={editingText}
+                  onChange={(e) => setEditingText(e.target.value)}
+                  onBlur={() => finishEdit(todo.id)}
+                  onKeyDown={(e) => { 
+                    if (e.key === "Enter") finishEdit(todo.id);
+                    if (e.key === "Escape") cancelEdit();
+                  }}
+                />
+              ) : (
+                  <List.Text
+                    completed = {todo.completed}
+                    onClick={ ()=> startEdit(todo)}
+                  >
+                    {todo.text}
+                  </List.Text>
+              )}
+              <List.DeleteButton onClick={() => {
+                const result = confirm("삭제하시겠습니까?");
+                if (result) {
+                  deleteTodo(todo.id)
+                }
+                }}>Delete</List.DeleteButton>
             </List.Item>
           ))}
         </List.Row>
